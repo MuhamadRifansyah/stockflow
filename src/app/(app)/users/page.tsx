@@ -108,7 +108,7 @@ export default async function UsersPage({
       ) : (
         <>
           {canManage && (
-            <form action={createUser} className="space-y-3 rounded-md border border-line bg-white p-5">
+            <form action={async (fd) => { await createUser(fd); }} className="space-y-3 rounded-md border border-line bg-white p-5">
               <h2 className="font-semibold">Tambah Pengguna</h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <input name="name" required placeholder="Nama lengkap" aria-label="Nama lengkap" className="rounded-md border border-line px-3 py-2 text-sm" />
@@ -144,7 +144,7 @@ export default async function UsersPage({
                 render: (u) =>
                   canManage && u.id !== user.id ? (
                     <span className="inline-flex gap-2">
-                      <form action={setUserActive.bind(null, u.id, !u.isActive)}>
+                      <form action={async () => { await setUserActive(u.id, !u.isActive); }}>
                         <button type="submit" className="rounded-md border border-line px-3 py-1.5 text-sm hover:border-accent">
                           {u.isActive ? "Nonaktifkan" : "Aktifkan"}
                         </button>

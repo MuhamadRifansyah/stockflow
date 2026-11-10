@@ -127,7 +127,7 @@ function ExportButton({ kind, format }: { kind: ReportKind; format: "excel" | "p
     return res;
   }
   return (
-    <form action={handleExport}>
+    <form action={async () => { await handleExport(); }}>
       <button type="submit" className="rounded-md border border-line bg-white px-4 py-2 text-sm hover:border-accent">
         Ekspor {format === "excel" ? "Excel (.xls)" : "PDF"}
       </button>

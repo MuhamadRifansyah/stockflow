@@ -92,7 +92,7 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
             <p className="mt-1 text-xs text-muted">
               Stok tidak bisa diubah di sini — gunakan Pergerakan Stok atau opname yang disetujui.
             </p>
-            <form action={updateItem.bind(null, item.id)} className="mt-4 space-y-3">
+            <form action={async (fd) => { await updateItem(item.id, fd); }} className="mt-4 space-y-3">
               <input name="sku" required defaultValue={item.sku} aria-label="SKU" className="w-full rounded-md border border-line px-3 py-2 text-sm" />
               <input name="name" required defaultValue={item.name} aria-label="Nama item" className="w-full rounded-md border border-line px-3 py-2 text-sm" />
               <select name="categoryId" required defaultValue={item.categoryId} aria-label="Kategori" className="w-full rounded-md border border-line px-3 py-2 text-sm">
@@ -113,7 +113,7 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
               </button>
             </form>
 
-            <form action={uploadItemImage.bind(null, item.id)} className="mt-5 border-t border-line pt-4">
+            <form action={async (fd) => { await uploadItemImage(item.id, fd); }} className="mt-5 border-t border-line pt-4">
               <label htmlFor="image" className="block text-sm font-medium">Gambar produk (maks. 2 MB, PNG/JPEG/WebP/GIF)</label>
               <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="mt-2 w-full text-sm" />
               <button type="submit" className="mt-2 rounded-md border border-line px-3 py-1.5 text-sm hover:border-accent">

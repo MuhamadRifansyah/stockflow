@@ -95,7 +95,7 @@ export default async function ItemsPage({
             <summary className="cursor-pointer rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">
               + Tambah Item
             </summary>
-            <form action={createItem} className="space-y-3 border-t border-line p-4">
+            <form action={async (fd) => { await createItem(fd); }} className="space-y-3 border-t border-line p-4">
               <div className="grid gap-3 sm:grid-cols-2">
                 <input name="sku" required placeholder="SKU, mis. ATK-BAT-AA" aria-label="SKU" className="rounded-md border border-line px-3 py-2 text-sm" />
                 <input name="name" required placeholder="Nama item" aria-label="Nama item" className="rounded-md border border-line px-3 py-2 text-sm" />

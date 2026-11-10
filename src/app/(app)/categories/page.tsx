@@ -26,7 +26,7 @@ export default async function CategoriesPage() {
       </div>
 
       {canManage && (
-        <form action={createCategory} className="flex flex-wrap items-end gap-3 rounded-md border border-line bg-white p-4">
+        <form action={async (fd) => { await createCategory(fd); }} className="flex flex-wrap items-end gap-3 rounded-md border border-line bg-white p-4">
           <div className="min-w-64 flex-1">
             <label htmlFor="name" className="block text-sm font-medium mb-1">Nama kategori baru</label>
             <input

@@ -39,7 +39,7 @@ export default async function SuppliersPage() {
             <summary className="cursor-pointer rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">
               + Tambah Pemasok
             </summary>
-            <form action={createSupplier} className="w-80 space-y-3 border-t border-line p-4">
+            <form action={async (fd) => { await createSupplier(fd); }} className="w-80 space-y-3 border-t border-line p-4">
               <input name="name" required placeholder="Nama pemasok" aria-label="Nama pemasok" className="w-full rounded-md border border-line px-3 py-2 text-sm" />
               <input name="contact" placeholder="Nama kontak" aria-label="Nama kontak" className="w-full rounded-md border border-line px-3 py-2 text-sm" />
               <input name="email" type="email" placeholder="Email" aria-label="Email" className="w-full rounded-md border border-line px-3 py-2 text-sm" />
@@ -93,7 +93,7 @@ export default async function SuppliersPage() {
             Pembelian mem-posting pergerakan stok masuk yang cocok secara otomatis — pembelian dan
             stok tidak pernah bisa berbeda.
           </p>
-          <form action={recordPurchase} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <form action={async (fd) => { await recordPurchase(fd); }} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <select name="supplierId" required aria-label="Pemasok" className="rounded-md border border-line px-3 py-2 text-sm">
               <option value="">Pilih pemasok…</option>
               {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}

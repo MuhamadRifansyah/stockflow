@@ -6,23 +6,26 @@ StockFlow is a production-quality inventory and asset management web application
 
 ## Screenshots
 
-![Login](docs/screenshots/01-login.png)
-![Dashboard](docs/screenshots/02-dashboard.png)
-![Semua Item](docs/screenshots/03-semua-item.png)
-![Kategori](docs/screenshots/04-kategori.png)
-![Lokasi](docs/screenshots/05-lokasi.png)
-![Pergerakan Stok](docs/screenshots/06-pergerakan-stok.png)
-![Registri Aset](docs/screenshots/07-registri-aset.png)
-![Penugasan Aset](docs/screenshots/08-penugasan-aset.png)
-![Permintaan Stok](docs/screenshots/09-permintaan-stok.png)
-![Detail Persetujuan](docs/screenshots/10-persetujuan-detail.png)
-![Persetujuan](docs/screenshots/11-persetujuan.png)
-![Stok Opname](docs/screenshots/12-stok-opname.png)
-![Pemasok](docs/screenshots/13-pemasok.png)
-![Laporan & Analitik](docs/screenshots/14-laporan-analitik.png)
-![Log Audit](docs/screenshots/15-log-audit.png)
-![Manajemen Pengguna](docs/screenshots/16-manajemen-pengguna.png)
-![Pengaturan](docs/screenshots/17-pengaturan.png)
+![Dashboard](docs/image-2.png)
+![Semua Item](docs/image-3.png)
+![Tambah Item Baru](docs/imasdh.png)
+![Kategori](docs/image-4.png)
+![Lokasi](docs/image-5.png)
+![Pergerakan Stok](docs/image-6.png)
+![Registri Aset](docs/image-7.png)
+![Penugasan Aset](docs/image-8.png)
+![Permintaan Stok](docs/image-9.png)
+![Detail Persetujuan](docs/image-10.png)
+![Persetujuan](docs/image-11.png)
+![Stok Opname](docs/image-12.png)
+![Pemasok](docs/image-13.png)
+![Laporan & Analitik](docs/image-14.png)
+![Log Audit](docs/image-15.png)
+![Manajemen Pengguna](docs/image-16.png)
+![Pengaturan](docs/image-17.png)
+![Dokumentasi](docs/image.png)
+
+Screenshot halaman login belum ada di repo — `docs/image.png` yang ter-upload berisi halaman Dokumentasi.
 
 ## Modules
 

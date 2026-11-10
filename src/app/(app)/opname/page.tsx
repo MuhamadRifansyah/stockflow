@@ -73,7 +73,7 @@ export default async function OpnamePage({ searchParams }: { searchParams: Searc
             <summary className="cursor-pointer rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">
               + Buat Sesi Opname
             </summary>
-            <form action={createOpnameSession} className="w-80 space-y-3 border-t border-line p-4">
+            <form action={async (fd) => { await createOpnameSession(fd); }} className="w-80 space-y-3 border-t border-line p-4">
               <div>
                 <label htmlFor="locationId" className="block text-sm font-medium mb-1">Lokasi / Gudang</label>
                 <select id="locationId" name="locationId" required className="w-full rounded-md border border-line px-3 py-2 text-sm">
@@ -147,7 +147,7 @@ export default async function OpnamePage({ searchParams }: { searchParams: Searc
 
           <div className="flex flex-wrap gap-2 border-t border-line pt-4">
             {activeDetail.status === "BERLANGSUNG" && canManage && (
-              <form action={submitOpname.bind(null, activeDetail.id)}>
+              <form action={async () => { await submitOpname(activeDetail.id); }}>
                 <button type="submit" className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">
                   Ajukan untuk Persetujuan
                 </button>
@@ -155,12 +155,12 @@ export default async function OpnamePage({ searchParams }: { searchParams: Searc
             )}
             {activeDetail.status === "DIAJUKAN" && canApprove && (
               <>
-                <form action={decideOpname.bind(null, activeDetail.id, "approve", undefined)}>
+                <form action={async () => { await decideOpname(activeDetail.id, "approve"); }}>
                   <button type="submit" className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">
                     ✓ Setujui &amp; Terapkan Penyesuaian
                   </button>
                 </form>
-                <form action={decideOpname.bind(null, activeDetail.id, "reject", undefined)}>
+                <form action={async () => { await decideOpname(activeDetail.id, "reject"); }}>
                   <button type="submit" className="rounded-md border border-danger/40 px-4 py-2 text-sm text-danger hover:bg-red-50">
                     ✕ Tolak (kembalikan untuk hitung ulang)
                   </button>

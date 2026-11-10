@@ -34,7 +34,7 @@ export default async function LocationsPage() {
       </div>
 
       {canManage && (
-        <form action={createLocation} className="flex flex-wrap items-end gap-3 rounded-md border border-line bg-white p-4">
+        <form action={async (fd) => { await createLocation(fd); }} className="flex flex-wrap items-end gap-3 rounded-md border border-line bg-white p-4">
           <div className="min-w-64 flex-1">
             <label htmlFor="name" className="block text-sm font-medium mb-1">Nama lokasi baru</label>
             <input id="name" name="name" required placeholder="mis. Gudang Cabang — Bandung" className="w-full rounded-md border border-line px-3 py-2 text-sm" />

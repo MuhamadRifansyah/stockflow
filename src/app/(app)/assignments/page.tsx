@@ -39,7 +39,7 @@ export default async function AssignmentsPage() {
       </p>
 
       {canManage && (
-        <form action={assignAsset} className="flex flex-wrap items-end gap-3 rounded-md border border-line bg-white p-4">
+        <form action={async (fd) => { await assignAsset(fd); }} className="flex flex-wrap items-end gap-3 rounded-md border border-line bg-white p-4">
           <div className="min-w-64 flex-1">
             <label htmlFor="assetId" className="block text-sm font-medium mb-1">Aset (hanya yang berstatus Aktif)</label>
             <select id="assetId" name="assetId" required className="w-full rounded-md border border-line px-3 py-2 text-sm">
@@ -82,7 +82,7 @@ export default async function AssignmentsPage() {
             key: "actions", header: "Aksi", align: "right",
             render: (a) =>
               canManage && a.status === "DIPINJAM" ? (
-                <form action={returnAsset} className="flex items-center justify-end gap-2">
+                <form action={async (fd) => { await returnAsset(fd); }} className="flex items-center justify-end gap-2">
                   <input type="hidden" name="assignmentId" value={a.id} />
                   <select name="condition" aria-label="Kondisi saat kembali" className="rounded-md border border-line px-2 py-1.5 text-sm">
                     <option value="BAIK">Baik</option>

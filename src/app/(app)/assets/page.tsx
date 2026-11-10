@@ -80,7 +80,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Searc
             <summary className="cursor-pointer rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark">
               + Daftarkan Aset
             </summary>
-            <form action={createAsset} className="w-80 space-y-3 border-t border-line p-4">
+            <form action={async (fd) => { await createAsset(fd); }} className="w-80 space-y-3 border-t border-line p-4">
               <input name="name" required placeholder="Nama aset" aria-label="Nama aset" className="w-full rounded-md border border-line px-3 py-2 text-sm" />
               <input name="serialNumber" placeholder="Nomor seri" aria-label="Nomor seri" className="w-full rounded-md border border-line px-3 py-2 text-sm" />
               <select name="categoryId" required aria-label="Kategori" className="w-full rounded-md border border-line px-3 py-2 text-sm">
@@ -153,13 +153,13 @@ export default async function AssetsPage({ searchParams }: { searchParams: Searc
             key: "actions", header: "Aksi", align: "right",
             render: (a) =>
               canManage && a.status === "AKTIF" ? (
-                <form action={setAssetMaintenance.bind(null, a.id, true)}>
+                <form action={async () => { await setAssetMaintenance(a.id, true); }}>
                   <button type="submit" className="rounded-md border border-line px-3 py-1.5 text-sm hover:border-accent">
                     Perawatan
                   </button>
                 </form>
               ) : canManage && a.status === "PERAWATAN" ? (
-                <form action={setAssetMaintenance.bind(null, a.id, false)}>
+                <form action={async () => { await setAssetMaintenance(a.id, false); }}>
                   <button type="submit" className="rounded-md border border-line px-3 py-1.5 text-sm hover:border-accent">
                     Selesai Rawat
                   </button>

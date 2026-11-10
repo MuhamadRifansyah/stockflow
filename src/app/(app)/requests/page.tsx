@@ -108,7 +108,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: Sea
             render: (r) => {
               if (canProcess && r.status === "DISETUJUI") {
                 return (
-                  <form action={startProcessing.bind(null, r.id)} className="flex items-center justify-end gap-2">
+                  <form action={async (fd) => { await startProcessing(r.id, fd); }} className="flex items-center justify-end gap-2">
                     <select name="sourceLocationId" required aria-label="Lokasi sumber" className="rounded-md border border-line px-2 py-1.5 text-sm">
                       <option value="">Pilih lokasi sumber…</option>
                       {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
@@ -121,7 +121,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: Sea
               }
               if (canProcess && r.status === "DIPROSES") {
                 return (
-                  <form action={completeRequest.bind(null, r.id)}>
+                  <form action={async () => { await completeRequest(r.id); }}>
                     <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-dark">
                       Selesaikan
                     </button>

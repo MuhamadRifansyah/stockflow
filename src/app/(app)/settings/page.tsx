@@ -55,7 +55,7 @@ export default async function SettingsPage() {
 
         <section className="rounded-md border border-line bg-white p-5">
           <h2 className="font-semibold">Ubah Kata Sandi</h2>
-          <form action={changeOwnPassword} className="mt-4 space-y-3">
+          <form action={async (fd) => { await changeOwnPassword(fd); }} className="mt-4 space-y-3">
             <div>
               <label htmlFor="currentPassword" className="block text-sm font-medium mb-1">Kata sandi saat ini</label>
               <input id="currentPassword" name="currentPassword" type="password" required className="w-full rounded-md border border-line px-3 py-2 text-sm" />
