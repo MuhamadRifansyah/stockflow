@@ -6,7 +6,23 @@ StockFlow is a production-quality inventory and asset management web application
 
 ## Screenshots
 
-Screenshots of the live application will be added to `docs/screenshots/` — the dashboard, inventory table, stock movement ledger, asset registry, approval workflow, and reports.
+![Login](docs/screenshots/01-login.png)
+![Dashboard](docs/screenshots/02-dashboard.png)
+![Semua Item](docs/screenshots/03-semua-item.png)
+![Kategori](docs/screenshots/04-kategori.png)
+![Lokasi](docs/screenshots/05-lokasi.png)
+![Pergerakan Stok](docs/screenshots/06-pergerakan-stok.png)
+![Registri Aset](docs/screenshots/07-registri-aset.png)
+![Penugasan Aset](docs/screenshots/08-penugasan-aset.png)
+![Permintaan Stok](docs/screenshots/09-permintaan-stok.png)
+![Detail Persetujuan](docs/screenshots/10-persetujuan-detail.png)
+![Persetujuan](docs/screenshots/11-persetujuan.png)
+![Stok Opname](docs/screenshots/12-stok-opname.png)
+![Pemasok](docs/screenshots/13-pemasok.png)
+![Laporan & Analitik](docs/screenshots/14-laporan-analitik.png)
+![Log Audit](docs/screenshots/15-log-audit.png)
+![Manajemen Pengguna](docs/screenshots/16-manajemen-pengguna.png)
+![Pengaturan](docs/screenshots/17-pengaturan.png)
 
 ## Modules
 
