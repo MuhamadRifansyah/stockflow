@@ -1,0 +1,394 @@
+// StockFlow — Prisma schema (PostgreSQL)
+// Mirrors the hosted build: UUID keys, unique SKU, per-location StockBalance
+// ledger. Balances are derived from StockMovement and never edited directly.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MovementType {
+  MASUK
+  KELUAR
+  TRANSFER
+  PENYESUAIAN
+}
+
+enum RequestStatus {
+  MENUNGGU
+  DISETUJUI
+  DITOLAK
+  DIPROSES
+  SELESAI
+}
+
+enum OpnameStatus {
+  BERLANGSUNG
+  DIAJUKAN
+  DISETUJUI
+  DITOLAK
+}
+
+enum AssetStatus {
+  AKTIF
+  DIPINJAMKAN
+  PERAWATAN
+  RUSAK
+  NONAKTIF
+}
+
+enum AssetCondition {
+  BAIK
+  RUSAK_RINGAN
+  RUSAK_BERAT
+}
+
+enum AssignmentStatus {
+  DIPINJAM
+  DIKEMBALIKAN
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  roleId       String
+  role         Role      @relation(fields: [roleId], references: [id])
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  sessions     Session[]
+  movements    StockMovement[] @relation("MovementCreator")
+  requests     StockRequest[]  @relation("Requester")
+  approvals    StockRequest[]  @relation("Approver")
+  opnames      StockOpname[]   @relation("OpnameCreator")
+  opnameDecisions StockOpname[] @relation("OpnameDecider")
+  auditLogs    AuditLog[]
+  notifications Notification[]
+
+  @@index([roleId])
+  @@index([email])
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  isLocked    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  key         String           @unique
+  label       String
+  module      String
+  createdAt   DateTime         @default(now())
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     Item[]
+  assets    Asset[]
+}
+
+model Item {
+  id          String   @id @default(uuid())
+  sku         String   @unique
+  name        String
+  description String?
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  supplierId  String?
+  supplier    Supplier? @relation(fields: [supplierId], references: [id])
+  unit        String   @default("pcs")
+  price       Int      @default(0) // harga satuan (IDR)
+  minStock    Int      @default(0)
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  balances  StockBalance[]
+  movements StockMovement[]
+  requestItems StockRequestItem[]
+  opnameDetails StockOpnameDetail[]
+  purchases Purchase[]
+
+  @@index([categoryId])
+  @@index([supplierId])
+  @@index([name])
+}
+
+model Location {
+  id        String   @id @default(uuid())
+  name      String
+  type      String   @default("Gudang") // Gudang | Kantor | Cabang
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  balances  StockBalance[]
+  movementsFrom StockMovement[] @relation("MovementFrom")
+  movementsTo   StockMovement[] @relation("MovementTo")
+  assets    Asset[]
+  opnames   StockOpname[]
+}
+
+model Supplier {
+  id        String   @id @default(uuid())
+  name      String
+  contact   String?
+  email     String?
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items     Item[]
+  purchases Purchase[]
+
+  @@index([name])
+}
+
+model Purchase {
+  id         String   @id @default(uuid())
+  supplierId String
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+  itemId     String
+  item       Item     @relation(fields: [itemId], references: [id])
+  quantity   Int
+  unitPrice  Int      // harga satuan saat beli (IDR)
+  total      Int
+  movementId String?  @unique
+  movement   StockMovement? @relation(fields: [movementId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@index([supplierId])
+  @@index([itemId])
+}
+
+model StockBalance {
+  id         String   @id @default(uuid())
+  itemId     String
+  item       Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  quantity   Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  @@unique([itemId, locationId])
+  @@index([locationId])
+}
+
+model StockMovement {
+  id           String       @id @default(uuid())
+  code         String       @unique // TRX-2026-0001
+  itemId       String
+  item         Item         @relation(fields: [itemId], references: [id])
+  type         MovementType
+  quantity     Int // signed delta dari sisi sumber; masuk +, keluar -
+  fromLocationId String?
+  fromLocation   Location?  @relation("MovementFrom", fields: [fromLocationId], references: [id])
+  toLocationId   String?
+  toLocation     Location?  @relation("MovementTo", fields: [toLocationId], references: [id])
+  balanceAfter Int?
+  note         String?
+  createdById  String
+  createdBy    User         @relation("MovementCreator", fields: [createdById], references: [id])
+  requestId    String?
+  request      StockRequest? @relation(fields: [requestId], references: [id])
+  opnameId     String?
+  opname       StockOpname?  @relation(fields: [opnameId], references: [id])
+  purchase     Purchase?
+  createdAt    DateTime     @default(now())
+
+  @@index([itemId])
+  @@index([fromLocationId])
+  @@index([toLocationId])
+  @@index([createdAt])
+  @@index([type])
+}
+
+model Asset {
+  id           String         @id @default(uuid())
+  code         String         @unique // AST-0001
+  name         String
+  serialNumber String?
+  categoryId   String
+  category     Category       @relation(fields: [categoryId], references: [id])
+  locationId   String
+  location     Location       @relation(fields: [locationId], references: [id])
+  condition    AssetCondition @default(BAIK)
+  status       AssetStatus    @default(AKTIF)
+  purchaseDate DateTime?
+  purchasePrice Int           @default(0) // IDR
+  notes        String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  assignments AssetAssignment[]
+
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([status])
+}
+
+model AssetAssignment {
+  id          String           @id @default(uuid())
+  assetId     String
+  asset       Asset            @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  employeeName String
+  assignedAt  DateTime         @default(now())
+  returnedAt  DateTime?
+  returnCondition AssetCondition?
+  status      AssignmentStatus @default(DIPINJAM)
+  note        String?
+  createdAt   DateTime         @default(now())
+
+  @@index([assetId])
+  @@index([status])
+}
+
+model StockRequest {
+  id           String        @id @default(uuid())
+  code         String        @unique // REQ-2026-000101
+  requesterId  String
+  requester    User          @relation("Requester", fields: [requesterId], references: [id])
+  purpose      String
+  status       RequestStatus @default(MENUNGGU)
+  sourceLocationId String?
+  approvedById String?
+  approvedBy   User?         @relation("Approver", fields: [approvedById], references: [id])
+  decisionNote String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  items     StockRequestItem[]
+  movements StockMovement[]
+
+  @@index([requesterId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model StockRequestItem {
+  id        String       @id @default(uuid())
+  requestId String
+  request   StockRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  itemId    String
+  item      Item         @relation(fields: [itemId], references: [id])
+  quantity  Int
+
+  @@index([requestId])
+  @@index([itemId])
+}
+
+model StockOpname {
+  id           String       @id @default(uuid())
+  locationId   String
+  location     Location     @relation(fields: [locationId], references: [id])
+  status       OpnameStatus @default(BERLANGSUNG)
+  note         String?
+  createdById  String
+  createdBy    User         @relation("OpnameCreator", fields: [createdById], references: [id])
+  decidedById  String?
+  decidedBy    User?        @relation("OpnameDecider", fields: [decidedById], references: [id])
+  decisionNote String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  details   StockOpnameDetail[]
+  movements StockMovement[]
+
+  @@index([locationId])
+  @@index([status])
+}
+
+model StockOpnameDetail {
+  id           String      @id @default(uuid())
+  opnameId     String
+  opname       StockOpname @relation(fields: [opnameId], references: [id], onDelete: Cascade)
+  itemId       String
+  item         Item        @relation(fields: [itemId], references: [id])
+  systemQty    Int
+  physicalQty  Int?
+  difference   Int         @default(0)
+
+  @@unique([opnameId, itemId])
+  @@index([itemId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String // low-stock | permintaan | opname | info
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  module    String
+  entityId  String?
+  prevValue String?
+  newValue  String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([module])
+  @@index([createdAt])
+}
+
+model LoginAttempt {
+  id        String   @id @default(uuid())
+  email     String
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+}
